@@ -5,13 +5,14 @@ A portable, efficient background utility that automatically unlocks KeePassXC da
 **Current Version**: 1.1.0
 
 ## Features
-- **Auto-Unlock on Login/Unlock**: Listens for D-Bus `ActiveChanged` signals from GNOME and Freedesktop screensaver interfaces to unlock your databases when you unlock your session.
+- **Auto-Unlock on Login/Unlock**: Listens for screensaver interfaces to unlock your databases when you unlock/lock your session.
 - **Process Monitoring**: Automatically detects when the KeePassXC process starts and triggers an unlock request.
 - **Session Awareness**: Intelligently skips unlock attempts while the screen is locked to avoid race conditions.
-- **Periodic Re-Unlock**: Every 30 seconds, the tool verifies that your databases are open (while the session is active), ensuring your vault stays ready even if manually locked or closed.
-- **Secure Storage**: Uses the system keyring (Secret Service/libsecret/KWallet) to store database passwords.
+- **Periodic Re-Unlock**: Configurable auto-unlock interval that verifies that your databases are open (while the session is active), ensuring your vault stays ready even if manually locked or closed.
+- **Secure Storage**: Uses the system SecretService keyring to store database passwords.
 - **Single Binary**: Compiles to a single, portable binary with no runtime dependencies like Python.
 - **Systemd Integration**: Built-in commands to install and manage a user-level background service.
+- **Shell Auto-Completion**: Automatically generates shell completion scripts for bash/zsh.
 
 ## Installation & Setup
 
@@ -25,13 +26,13 @@ cargo build --release
 ### 2. Configure Databases
 Add your KeePassXC database(s) to the unlocker. This will prompt for your database password and store it securely in your system keyring.
 ```bash
-./target/release/keepassxc-unlocker add /path/to/your/database.kdbx
+keepassxc-unlocker add /path/to/your/database.kdbx
 ```
 
 ### 3. Install as a Service
 Enable the utility to run automatically in the background as a systemd user service.
 ```bash
-./target/release/keepassxc-unlocker service add
+keepassxc-unlocker service add
 ```
 
 ## CLI Usage
