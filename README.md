@@ -1,26 +1,83 @@
-# KeePassXC-Unlocker
+# KeePassXC Unlocker (Rust)
 
-KeePassXC Unlocker is a took designed to utilize your system's keyring to
-unlock your KeePassXC database(s) on login and session unlocking.
+A portable, efficient background utility that automatically unlocks KeePassXC databases based on D-Bus signals and process events.
 
-Currently this only works on Linux, but the aim is to get this working
-on macOS as well, and maybe Windows, if someone's willing to help write the
-Windows portions and test, but I don't run Windows.
+**Current Version**: 1.1.0
 
-## Command Help:
+## Features
+- **Auto-Unlock on Login/Unlock**: Listens for D-Bus `ActiveChanged` signals from GNOME and Freedesktop screensaver interfaces to unlock your databases when you unlock your session.
+- **Process Monitoring**: Automatically detects when the KeePassXC process starts and triggers an unlock request.
+- **Session Awareness**: Intelligently skips unlock attempts while the screen is locked to avoid race conditions.
+- **Periodic Re-Unlock**: Every 30 seconds, the tool verifies that your databases are open (while the session is active), ensuring your vault stays ready even if manually locked or closed.
+- **Secure Storage**: Uses the system keyring (Secret Service/libsecret/KWallet) to store database passwords.
+- **Single Binary**: Compiles to a single, portable binary with no runtime dependencies like Python.
+- **Systemd Integration**: Built-in commands to install and manage a user-level background service.
 
+## Installation & Setup
+
+### 1. Build from Source
+Ensure you have the Rust toolchain installed.
+```bash
+cargo build --release
+# The binary will be at target/release/keepassxc-unlocker
 ```
-Usage: keepassxc-unlocker <command> [arguments]
+
+### 2. Configure Databases
+Add your KeePassXC database(s) to the unlocker. This will prompt for your database password and store it securely in your system keyring.
+```bash
+./target/release/keepassxc-unlocker add /path/to/your/database.kdbx
+```
+
+### 3. Install as a Service
+Enable the utility to run automatically in the background as a systemd user service.
+```bash
+./target/release/keepassxc-unlocker service add
+```
+
+## CLI Usage
+
+```text
+Usage: keepassxc-unlocker [OPTIONS] <COMMAND>
+
 Commands:
-  add <db>      - Add an entry to the keyring
-  remove <db>   - Remove an entry from the keyring
-  service <opt> - Add or Remove user service for automation
-  unlock        - Unlock all KeePassXC databases from keyring
-  watch         - Monitor screensaver lock/unlock events
-  help          - Show this help message
+  add <DB_PATH>     Add an entry to the keyring and enable it in config
+  remove <DB_PATH>  Remove an entry from the keyring and config
+  list              List all configured databases and their status
+  completion <SH>   Generate shell completion scripts (bash, zsh, fish, etc.)
+  service <ACTION>  Manage the systemd user service (add, remove, status)
+  unlock            Manually trigger an unlock of all enabled databases
+  watch             Start the background monitor (used by the service)
+  version           Show version information
+  help              Print help information
 
-Service Options:
-  add           - Add systemd user service to automate unlock
-  remove        - Remove systemd user service and automation
-  status        - Status of service
+Options:
+  -v, --version     Show version information
+  -h, --help        Print help
 ```
+
+## Shell Completions
+To enable auto-completion for your shell, add the following to your configuration:
+
+### Bash
+```bash
+source <(keepassxc-unlocker completion bash)
+```
+
+### Zsh
+```zsh
+source <(keepassxc-unlocker completion zsh)
+```
+
+## Configuration
+The tool maintains compatibility with the original configuration file at:
+`~/.config/keepassxc-unlockerrc`
+
+You can manually enable/disable databases or change the monitored process name there.
+
+## Requirements
+- **KeePassXC**: Must have "Allow Browser Integration" or "Enable D-Bus" options enabled for the `openDatabase` call to work.
+- **Linux**: Requires a D-Bus session bus and a compatible screensaver interface (GNOME, KDE, XFCE).
+- **Keyring**: A running secret service (like `gnome-keyring` or `kwallet`).
+
+## License
+MIT / Apache-2.0

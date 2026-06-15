@@ -1,0 +1,19 @@
+[package]
+name = "keepassxc-unlocker"
+version = "1.1.0"
+edition = "2021"
+
+[dependencies]
+zbus = "4.4.0"
+tokio = { version = "1.37.0", features = ["full"] }
+keyring = { version = "3.2.1", features = ["sync-secret-service"] }
+rust-ini = "0.21.3"
+sysinfo = "0.31.2"
+clap = { version = "4.5.4", features = ["derive"] }
+clap_complete = "4.5.4"
+directories = "5.0.1"
+anyhow = "1.0.86"
+env_logger = "0.11.3"
+log = "0.4.21"
+futures-util = "0.3.30"
+rpassword = "7.3"
