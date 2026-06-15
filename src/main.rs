@@ -225,15 +225,25 @@ async fn watch() -> Result<()> {
         .await
     });
 
-    // Periodic check task (every 30 seconds)
+    // Periodic check task (based on config)
+    let autounlock_interval = config.get_autounlock_interval();
     let lock_state_for_periodic = session_locked.clone();
     let periodic_handle = tokio::spawn(async move {
-        loop {
-            sleep(Duration::from_secs(30)).await;
-            if !*lock_state_for_periodic.lock().unwrap() {
-                // Periodic check is silent
-                let _ = unlock_all(true).await;
+        if autounlock_interval > 0 {
+            info!(
+                "Periodic auto-unlock enabled every {} seconds.",
+                autounlock_interval
+            );
+            loop {
+                sleep(Duration::from_secs(autounlock_interval)).await;
+                if !*lock_state_for_periodic.lock().unwrap() {
+                    // Periodic check is silent
+                    let _ = unlock_all(true).await;
+                }
             }
+        } else {
+            // If disabled, just sleep indefinitely to not trigger select
+            futures_util::future::pending::<()>().await;
         }
     });
 

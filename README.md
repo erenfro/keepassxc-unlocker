@@ -72,7 +72,14 @@ source <(keepassxc-unlocker completion zsh)
 The tool maintains compatibility with the original configuration file at:
 `~/.config/keepassxc-unlockerrc`
 
-You can manually enable/disable databases or change the monitored process name there.
+### Configuration Options
+
+#### `[monitor]` section:
+- `process`: The name of the KeePassXC process to monitor (default: `keepassxc`).
+- `service`: The name of the keyring service (default: `keepassxc-unlocker`).
+- `autounlock`: Periodic auto-unlock interval in seconds. Set to `0` to disable (default: `0`).
+
+You can manually enable/disable databases in the `[databases]` section.
 
 ## Requirements
 - **KeePassXC**: Must have "Allow Browser Integration" or "Enable D-Bus" options enabled for the `openDatabase` call to work.
@@ -80,4 +87,4 @@ You can manually enable/disable databases or change the monitored process name t
 - **Keyring**: A running secret service (like `gnome-keyring` or `kwallet`).
 
 ## License
-GNU GENERAL PUBLIC LICENSE Version 3
+GNU General Public License v3.0 (GPLv3)
