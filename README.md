@@ -80,4 +80,4 @@ You can manually enable/disable databases or change the monitored process name t
 - **Keyring**: A running secret service (like `gnome-keyring` or `kwallet`).
 
 ## License
-MIT / Apache-2.0
+GNU GENERAL PUBLIC LICENSE Version 3
